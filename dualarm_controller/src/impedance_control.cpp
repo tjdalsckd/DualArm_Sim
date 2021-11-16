@@ -363,7 +363,18 @@ namespace dualarm_controller
                 targetpos(10) = msg.dx[1].position.y;
                 targetpos(11) = msg.dx[1].position.z;
             });
+            const auto poseCallback = utils::makeCallback<geometry_msgs::Pose>([&](const auto& msg){
+			//task_goal_values[0] = msg->orientation.x;
+			//task_goal_values[1] = msg->orientation.y;
+			//task_goal_values[2] = msg->orientation.z;
+			//task_goal_values[3] = msg->orientation.w;
+			//task_goal_values[4] = msg->position.x;
+			//task_goal_values[5] = msg->position.y;
+			//task_goal_values[6] = msg->position.z;
+			std::cout<<msg->position.x<<std::endl;
+            });
             sub_x_cmd_ = n.subscribe<dualarm_controller::TaskDesiredState>( "command", 5, joint_state_cb);
+            vive_pose_sub  = n.subscribe<geometry_msgs::Pose>( "/Pose", 5, poseCallback);
             sub_ft_sensor_R = n.subscribe<geometry_msgs::WrenchStamped>("/ft_sensor_topic_R", 5, &Impedance_Control::UpdateFTsensorR, this);
             sub_ft_sensor_L = n.subscribe<geometry_msgs::WrenchStamped>("/ft_sensor_topic_L", 5, &Impedance_Control::UpdateFTsensorL, this);
             return true;
@@ -835,6 +846,7 @@ namespace dualarm_controller
         boost::scoped_ptr<realtime_tools::RealtimePublisher<dualarm_controller::TaskCurrentState>> state_pub_;
 
         // subscriber
+        ros::Subscriber vive_pose_sub;
         ros::Subscriber sub_x_cmd_;
         ros::Subscriber sub_ft_sensor_R, sub_ft_sensor_L;
 
